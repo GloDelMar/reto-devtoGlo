@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createAccount } from '../api/api';
+import { createAccount, login } from '../api/api';
 import { useRouter } from 'next/router';
 
 export default function CreateAccount() {
@@ -12,19 +12,24 @@ export default function CreateAccount() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await createAccount(email, password, name);
-      console.log('Response from API:', response);
+      // Primero, crea la cuenta
+      await createAccount(email, password, name);
+      
+      // Luego, inicia sesión automáticamente
+      const loginResponse = await login(email, password);
+      console.log('Respuesta de inicio de sesión:', loginResponse);
 
-      // Ya no necesitas verificar el token aquí porque la función createAccount lo maneja
-      router.push('/'); // Ejemplo de redirección exitosa
+      // Redirige al usuario a la página principal
+      router.push('/'); 
 
+      // Limpia los campos del formulario
       setName('');
       setEmail('');
       setPassword('');
 
     } catch (error) {
-      console.error('Error creating account:', error);
-      setError('Error al crear cuenta: ' + error.message);
+      console.error('Error al crear cuenta o iniciar sesión:', error);
+      setError('Error al crear cuenta o iniciar sesión: ' + error.message);
     }
   };
   

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { ListSections } from "./listaSec";
 
+
 export function LeftSideBar() {
   const infoTabs = [
     {

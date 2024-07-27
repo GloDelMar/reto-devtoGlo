@@ -37,8 +37,7 @@ export function login(email, password) {
     
         const data = await response.json();
     
-        // Guardar el token en localStorage si existe en la respuesta
-        if (data.token) {
+        if (data.data.token) {
           localStorage.setItem('token', data.token);
         }
     
@@ -49,30 +48,39 @@ export function login(email, password) {
     }
     
     export async function createPost(postData) {
-      // Obtener el token de localStorage
-      const token = localStorage.getItem('token');
-      console.log('Token obtenido:', token);
+      try {
+        // Obtener el token de localStorage
+        const token = localStorage.getItem('token');
+        console.log('Token obtenido:', token);
     
-      const response = await fetch(`${API_URL}/posts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Enviar el token de autorización si está disponible
-          ...(token && { "Authorization": `Bearer ${token}` }),
-        },
-        body: JSON.stringify(postData),
-      });
+        const response = await fetch(`${API_URL}/posts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            
+            ...(token && { "Authorization": `Bearer ${token}` }),
+          },
+          body: JSON.stringify(postData), 
+        });
     
-      console.log('Estado de la respuesta:', response.status);
+        console.log('Estado de la respuesta:', response.status);
     
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Error en la solicitud:', error);
-        throw new Error(error.message);
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Token inválido o expirado. Por favor, inicia sesión nuevamente.');
+          }
+          
+          const error = await response.json();
+          console.error('Error en la solicitud:', error);
+          throw new Error(error.message);
+        }
+    
+        const data = await response.json();
+        return data.data.post; 
+      } catch (error) {
+        console.error('Error al crear el post:', error);
+        throw error;
       }
-    
-      const data = await response.json();
-      return data; // Devolver el nuevo post creado
     }
     
 
@@ -93,7 +101,7 @@ export function login(email, password) {
         const data = await response.json();
         console.log("Data received from API:", data);
 
-        // Asegúrate de que data es un array antes de devolverlo
+        
         if (!Array.isArray(data.data.posts)) {
             throw new Error("La respuesta de la API no es un array de posts");
         }
