@@ -106,7 +106,7 @@ export function login(email, password) {
             throw new Error("La respuesta de la API no es un array de posts");
         }
 
-        return data.data.posts; // Devuelve directamente data, que es un array de posts
+        return data.data.posts;
     } catch (error) {
         console.error("Error fetching or parsing posts:", error);
         throw error;
@@ -129,4 +129,22 @@ export async function getPostById(id) {
     console.error("Failed to fetch post:", error);
     throw error;
   }
+}
+
+
+
+
+export function getUserById(id) {
+  return fetch(`${API_URL}/users/${id}`, {
+    method: "GET", 
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Error fetching user with id ${id}`);
+      }
+      return response.json();
+    });
 }
