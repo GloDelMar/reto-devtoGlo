@@ -1,45 +1,47 @@
 import React, { useState } from "react";
-import { createPost, getPosts } from "../api/api"; // Importa las funciones de la API necesarias
-import { Toaster, toast } from "sonner"; // Importa el componente de Toast para notificaciones
+import { createPost, getPosts } from "../api/api"; 
+import { Toaster, toast } from "sonner"; 
 
 export default function CreatePost() {
   const [formData, setFormData] = useState({
     title: "",
-    imagen: "", // Asegúrate de que este nombre coincida con el nombre esperado en el backend
+    imagen: "",
     body: "",
   });
 
-  const [posts, setPosts] = useState([]); // Estado para almacenar los posts
+  const [posts, setPosts] = useState([]); 
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    try {
-      await createPost(formData); // Llama a la función para crear el nuevo post
-      toast.success("Registro exitoso");
 
-      // Limpia el formulario después de crear el post
-      setFormData({
-        title: "",
-        imagen: "",
-        body: "",
+    createPost(formData)
+      .then(() => {
+        toast.success("Registro exitoso");
+
+        
+        setFormData({
+          title: "",
+          imagen: "",
+          body: "",
+        });
+
+        
+        return getPosts();
+      })
+      .then((updatedPosts) => {
+        setPosts(updatedPosts);
+        console.log("Lista de posts actualizada:", updatedPosts);
+      })
+      .catch((error) => {
+        console.error("Error al enviar el formulario:", error);
+        toast.error("Error al registrar");
       });
-
-      // Recupera y muestra la lista de posts actualizada
-      const updatedPosts = await getPosts(); // Suponiendo que getPosts() devuelve la lista actualizada de posts
-      setPosts(updatedPosts); // Actualiza el estado con la lista de posts
-      console.log("Lista de posts actualizada:", updatedPosts);
-
-    } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-      toast.error("Error al registrar");
-    }
   };
-
   return (
     <main>
       <Toaster />

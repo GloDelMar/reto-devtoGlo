@@ -14,7 +14,6 @@ export default function Posts() {
         return <div>No hay posts para mostrar</div>;
     }
 
-    // Renderizado del primer post
     const firstPost = posts[0];
 
     return (
@@ -24,7 +23,7 @@ export default function Posts() {
                     <img src={firstPost.imagen} className="w-full h-auto pb-4" />
                     <div className="flex items-center justify-start">
                         <div className="flex items-center">
-                            {/* Asumiendo que `firstPost.user.profilePic` contiene la URL de la imagen de perfil */}
+                          
                             <img
                                 src={firstPost.user.profilePic}
                                 style={{ width: "40px", height: "40px", borderRadius: "50%" }}
@@ -45,12 +44,12 @@ export default function Posts() {
                     </div>
                     <div className="mb-4">
                         <h2 className="text-xl font-semibold p-4">{firstPost.title}</h2>
-                        {/* Aquí puedes renderizar las etiquetas o categorías de los posts si las tienes */}
+                        
                         <div className="ml-3">#Javascript #discuss #jokes</div>
                     </div>
                     <div className="flex flex-wrap gap-2 justify-between mt-4">
                         <span className="relative flex items-center space-x-1">
-                            {/* Aquí puedes renderizar el ícono y el número de comentarios */}
+                           
                             <div className="flex items-center justify-center ml-4">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

@@ -9,30 +9,27 @@ export default function CreateAccount() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      // Primero, crea la cuenta
-      await createAccount(email, password, name);
-      
-      // Luego, inicia sesión automáticamente
-      const loginResponse = await login(email, password);
-      console.log('Respuesta de inicio de sesión:', loginResponse);
 
-      // Redirige al usuario a la página principal
-      router.push('/'); 
-
-      // Limpia los campos del formulario
-      setName('');
-      setEmail('');
-      setPassword('');
-
-    } catch (error) {
-      console.error('Error al crear cuenta o iniciar sesión:', error);
-      setError('Error al crear cuenta o iniciar sesión: ' + error.message);
-    }
+    createAccount(email, password, name)
+      .then(() => {
+        return login(email, password);
+      })
+      .then((loginResponse) => {
+        console.log('Respuesta de inicio de sesión:', loginResponse);
+        router.push('/');
+        
+        // Limpiar los campos del formulario
+        setName('');
+        setEmail('');
+        setPassword('');
+      })
+      .catch((error) => {
+        console.error('Error al crear cuenta o iniciar sesión:', error);
+        setError('Error al crear cuenta o iniciar sesión: ' + error.message);
+      });
   };
-  
     return (
         <main className="flex justify-center items-center flex-col min-h-screen">
             <div className="flex flex-col items-center mb-8">

@@ -44,7 +44,7 @@ export function LeftSideBar() {
   const router = useRouter();
 
   useEffect(() => {
-    // Verificar si estamos en el cliente para acceder al localStorage
+    
     if (typeof window !== "undefined") {
       const tokenFromStorage = localStorage.getItem("token");
       setToken(tokenFromStorage);
@@ -59,12 +59,7 @@ export function LeftSideBar() {
     router.push("/login");
   }
 
-  function handleLogout() {
-    // Eliminar el token del localStorage
-    localStorage.removeItem("token");
-    // Actualizar el estado para reflejar que no hay token
-    setToken(null);
-  }
+ 
 
   return (
     <aside className="hidden md:block max-w-96 min-w-[250px] p-3 flex-col ml-2 mr-4">

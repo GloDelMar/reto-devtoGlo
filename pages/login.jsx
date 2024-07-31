@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import { login } from '../api/api';
 import { useRouter } from 'next/router';
 
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar si mostrar la contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const userData = await login(email, password);
-      console.log('Inicio de sesión exitoso:', userData);
-      setError('');
-      
-      // Verificar que se guarda el token correctamente
-      console.log('Token guardado en localStorage:', localStorage.getItem('token'));
-
-      router.push('/');
-    } catch (error) {
-      setError(error.message);
-      console.error('Error al iniciar sesión:', error);
-    }
+    login(email, password)
+      .then((userData) => {
+        console.log('Inicio de sesión exitoso:', userData);
+        setError('');
+    
+        console.log('Token guardado en localStorage:', localStorage.getItem('token'));
+        
+        router.push('/');
+      })
+      .catch((error) => {
+        setError(error.message);
+        console.error('Error al iniciar sesión:', error);
+      });
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
 
     return (
         <main className="flex justify-center items-center flex-col min-h-screen">
@@ -39,8 +39,7 @@ export default function Login() {
                 <p>DEV Community is a community of 1,683,678 amazing developers</p>
             </div>
             
-
-             <div className=" flex items-center border border-blue-500 p-4 rounded-lg w-96 lg:w-1/3 md:w-1/2 sm:w-96 mb-4"> 
+            <div className=" flex items-center border border-blue-500 p-4 rounded-lg w-96 lg:w-1/3 md:w-1/2 sm:w-96 mb-4"> 
                 <img className="h-8 w-8 mr-4" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAh1BMVEX///8AAADp6eny8vLl5eX29vY3Nze8vLz4+PhfX18+Pj6pqant7e3n5+f7+/vd3d3Q0NC1tbVERESQkJCurq7Kysp8fHyWlpZvb2/V1dV0dHTe3t5paWk4ODhOTk4ODg4iIiKCgoIdHR0ZGRliYmKhoaFJSUlWVlbCwsKIiIguLi6Tk5MpKSl7U8IOAAAGFElEQVR4nO2d6XbiMAxGMYSylgIhhK1AoWxT3v/5ptCZKRAHOtYnG3F0f3Nq34YktiyJQlR8bKJCsfDYNB/esKiG4lFD+aihfNRQPmooHzWUjxrKRw3lo4byUUP5qKF81FA+aigfNZSPGspHDeWjhvJRQ/mooXzU0BvjTr9r3hj+8H0YjtMnc2DA8LfvwTCpmT/UGP56eMN23ZhHNmwOzAl9hhECG1bMGSnDEEENW5NzQdNgGCSkYfPpQtAMGUYJaBgtLgVNk2GYcIbPGT/zxDFOMMNSVtDsOAYKZti1GLY5BgplOLII7lscIwUyrFgETcwyVBjDqk3QPLOMFcbQ9h1l2VgUAhmOrZfwhWewIIY1m+CIabAQhvZLWGIaLYRh3ybIseg+EsCwZRPssg0XwLBjEVyW2YYLYHi5KTzAsl77wr9heZYVrDCO599wmBXscY7n37CREeywjuffMPOu4AhdnODf8P3cb8MRuTjFv+H6TJDtRf8P/4avJ34D7gtYCGH4Hb7oe/ALYTg92i0mFb5lzBn+DSurVSOJPOkVgp9bnNAqlwVFoqrjpLdK07RRefnJrKPOrlafL5eLfbf21kiwO0UGw3a6WX4/Lhe11fXwxPYtc3wxjYGrALTh0La9ncXjnI8nA8vHDyzjCDQjrGHFFsk+0u1lv3tRPM/7+PFlmfdv+T+Qhknm63Y+4+Ts073p1U8fmCBemDjD583NGS/TP7dkeWuNmGYBHArDDG2xCQv7QdxL3y2b4Bym5MsIMsycV+OgBjgwhs2fX5T/hxgBgBgOOQWpigjDF1Y/QwxUAQwjbkFjktuzYDRsZlMq8BCWqnTD3GUMEkLQn2yYt7DEErtvrKiGWx9+84D3YdmHYJ20YSQa/nB5SWJCmSDV0HIGAYd6+k0zfL89QSrkDA2SIftixph3qiDNkG9D8Zc6PfxGMfSwXAOkSVEMY3ZBxNkwxXDPLUi/CWmGbW5BTCofwdCa+IMEU5tAMOQWnGFOb9wNLZnoWEAJte6GPW5D0PmpuyH3xnCKESQYXg/h00Fl2Tgb2uoloKBOG5wNuVfdsPoZZ0NrPQEQWEmws2HKbAjL5nM25F7RUIJPGEPulwXqkNvd0FpRAASWkOFsWL89SRLV4IbcL3w1lG8Y/j7kNoSV6jkbvt6eJAlYJdvdPku3wQ1v5wfRgDWQuNs1DazNibPhG7PhPrjhitkQ9qhxNmQPRKFuRGfDhNvwNbQh/8ET6GvqbGhvGoAE1FLJPZrInymECQm7G/KnYWAuorsh++sCdCe6G/IfH5p1WEP2oLfBVCcSzg+vFkuAANTO3PMZ8CcL+lafYOglLbEe0rDpw9CsqTlDlGwTL9nBZkqMulEMd14MzS/avUgx9JC49wUpZkPK3PvlS7FPuBlJhj7eF1/M3S8jydBHivBfNq4vf1qOMG+90wWO6dA0Q09P0y8cO2PSDO19yZhw/JoSqxFu1/LCcF2/EQ3ZY4rfuO6kiIZVf88a11xMat3Thy9B54xoqqGfDYYhFDyTq/P4ay6OuBcgkg09vTDc6xLoNaQeap8+d1Du86MbeqicIaXTAmq5PdTJzgnTk1GtTsmIRnQcYK9/IsW+EYYl7oUNqfkHpC8G8+qUVuCF6W3Cu8WgVQdhDIucgsTjGVAHHsa8duoRG6qL0vr2VB2hJnyjDNmiw+QjRFgnrGx7YAgb8sRw3cxYkveXQc8PLyhznAkD6kqAPfcYIuCI4idkV0H4rUjYFX4D7QwJTiKaQSqDoIYt7KkwprgL292zhHzagMpkwR1agQvU4Bm0OcA2/LDfYIP3EY6W1+b9NGp0tu1hUunsrpczfMAmhO+UXMp73MwG27OdXvUlzu2OAvxBCI5u19aXRrdj28gm1rXeHPmDECz9vLeZVor93FTRYpz5WmN/YY6pY/nq9LWxtvSBPv3w9vTsYx6Df0+Aret8sjvUfs03u8oPZlweNkaT6et0tML/YMn99NXnQg3lo4byUUP5qKF81FA+aigfNZSPGspHDeWjhvJRQ/mooXzUUD5qKB81lI8aykcN5aOG8lFD+aihfIqFqFl8aKLfeJdT+hdLpesAAAAASUVORK5CYII=" alt="" />
                 <span className="text-center flex-grow">Sing up with Apple</span>
               </div>
@@ -69,7 +68,7 @@ export default function Login() {
                 <span className="text-center flex-grow">Sing up with Email</span>
               </div>
             
-            <div>
+            <div> 
                 <p>OR</p>
             </div>
     <form onSubmit={handleLogin} className="flex flex-col items-center gap-4 w-96 lg:w-1/3 md:w-1/2 sm:w-96">
@@ -78,7 +77,10 @@ export default function Login() {
           <input
             className="border border-gray-400 px-2 py-1"
             type="email"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required
+            />
            </div>
            <div className="flex flex-col w-full mb-4">
           <span className="mb-1">Password</span>
