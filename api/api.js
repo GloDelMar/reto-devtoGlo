@@ -47,40 +47,29 @@ export function login(email, password) {
       }
     }
     
-    export async function createPost(postData) {
-      try {
-        // Obtener el token de localStorage
-        const token = localStorage.getItem('token');
-        console.log('Token obtenido:', token);
+    export async function createPost(data, token) {
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+      };
     
-        const response = await fetch(`${API_URL}/posts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            
-            ...(token && { "Authorization": `Bearer ${token}` }),
-          },
-          body: JSON.stringify(postData), 
-        });
+      console.log("Headers:", headers);
+      console.log("Body:", JSON.stringify({
+        title: data.title,
+        imagen: data.imagen,
+        body: data.body,
+      })); // Depuración
     
-        console.log('Estado de la respuesta:', response.status);
-    
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Token inválido o expirado. Por favor, inicia sesión nuevamente.');
-          }
-          
-          const error = await response.json();
-          console.error('Error en la solicitud:', error);
-          throw new Error(error.message);
-        }
-    
-        const data = await response.json();
-        return data.data.post; 
-      } catch (error) {
-        console.error('Error al crear el post:', error);
-        throw error;
-      }
+      return fetch(`${API_URL}/posts`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          title: data.title,
+          imagen: data.imagen,
+          body: data.body,
+        })
+      })
+      .then((response) => response.json());
     }
     
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { createPost, getPosts } from "../api/api"; 
-import { Toaster, toast } from "sonner"; 
+import { createPost, getPosts } from "../api/api";
+import { Toaster, toast } from "sonner";
+import { useRouter } from 'next/router';
 
 export default function CreatePost() {
   const [formData, setFormData] = useState({
@@ -9,38 +10,45 @@ export default function CreatePost() {
     body: "",
   });
 
-  const [posts, setPosts] = useState([]); 
+  const [posts, setPosts] = useState([]);
+  const router = useRouter();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    createPost(formData)
-      .then(() => {
-        toast.success("Registro exitoso");
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      toast.error("Token no encontrado. Por favor, inicia sesión.");
+      return;
+    }
 
-        
-        setFormData({
-          title: "",
-          imagen: "",
-          body: "",
-        });
+    try {
+      const createdPost = await createPost(formData, token);
+      toast.success("Registro exitoso");
+      console.log("Post creado:", createdPost);
 
-        
-        return getPosts();
-      })
-      .then((updatedPosts) => {
-        setPosts(updatedPosts);
-        console.log("Lista de posts actualizada:", updatedPosts);
-      })
-      .catch((error) => {
-        console.error("Error al enviar el formulario:", error);
-        toast.error("Error al registrar");
+      setFormData({
+        title: "",
+        imagen: "",
+        body: "",
       });
+
+      const updatedPosts = await getPosts();
+      setPosts(updatedPosts);
+      console.log("Lista de posts actualizada:", updatedPosts);
+
+
+      router.push("/");
+    } catch (error) {
+      console.error("Error al enviar el formulario:", error);
+      toast.error("Error al registrar");
+    }
   };
   return (
     <main>
@@ -112,10 +120,10 @@ export default function CreatePost() {
             >
               <div className="flex items-center">
                 <label className="cursor-pointer px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-100">
-                  Add a cover image (URL or file)
+                  Add a cover image (URL)
                   <input
                     type="text"
-                    name="imagen" 
+                    name="imagen"
                     accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
                     data-max-file-size-mb="25"
                     onChange={handleChange}
@@ -135,7 +143,7 @@ export default function CreatePost() {
             </div>
           </div>
           <div className="flex-1 relative outline-none flex flex-col rounded-bl-md rounded-br-md"></div>
-         
+
           <div className="flex-1 relative outline-none flex flex-col rounded-bl-md rounded-br-md"></div>
           <div className="h-full">
             <textarea

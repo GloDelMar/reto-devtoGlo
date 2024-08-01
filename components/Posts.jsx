@@ -9,10 +9,8 @@ export default function Posts({ posts }) {
     return <div>No hay posts para mostrar</div>;
   }
 
-  // Desestructuración del primer post y el resto
   const [firstPost, ...restPosts] = posts;
 
-  // Función para renderizar cada post
   const renderPost = (post, isFirstPost) => {
     const { user = {}, imagen, createdat, title } = post || {};
     const { profilePic, name } = user || {};
